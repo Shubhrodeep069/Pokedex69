@@ -1,0 +1,1233 @@
+
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Pokémon Memory Match Deluxe</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+    :root {
+      --primary: #ffcb05;
+      --secondary: #2a75bb;
+      --accent: #e63946;
+      --dark: #3c5aa6;
+      --light: #f0f8ff;
+    }
+
+    body {
+      font-family: 'Press Start 2P', cursive;
+      text-align: center;
+      margin: 0;
+      padding: 20px;
+      background-color: var(--dark);
+      color: white;
+      background-image: url('https://i.imgur.com/XWuT6f0.png');
+      background-size: cover;
+      animation: bgPan 60s infinite linear;
+    }
+
+    @keyframes bgPan {
+      0% {
+        background-position: 0% 0%;
+      }
+
+      100% {
+        background-position: 100% 100%;
+      }
+    }
+
+
+
+
+    .back-to-pokedex-container {
+      position: fixed;
+      top: 20px;
+      /* Changed from 25px */
+      left: 20px;
+      /* Changed from 25px */
+      z-index: 1000;
+      filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.15));
+    }
+
+    .back-to-pokedex-btn {
+      padding: 14px 24px;
+      font-size: 1.2em;
+      background: linear-gradient(145deg, #ff1c1c, #d10000);
+      color: white;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      font-weight: 700;
+      box-shadow:
+        0 4px 8px rgba(0, 0, 0, 0.2),
+        inset -4px -4px 8px rgba(0, 0, 0, 0.2),
+        inset 4px 4px 8px rgba(255, 255, 255, 0.1);
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      /* position: relative; */
+      position: relative;
+      overflow: hidden;
+      border: 2px solid white;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-family: 'Arial Rounded MT Bold', 'Arial', sans-serif;
+    }
+
+    .back-to-pokedex-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 50%;
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .back-to-pokedex-btn::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 30px;
+      height: 30px;
+      background: white;
+      border-radius: 50%;
+      opacity: 0.3;
+      transition: all 0.3s;
+    }
+
+    .back-to-pokedex-btn:hover {
+      transform: translateY(-3px) scale(1.05);
+      box-shadow:
+        0 8px 15px rgba(0, 0, 0, 0.3),
+        inset -4px -4px 8px rgba(0, 0, 0, 0.2),
+        inset 4px 4px 8px rgba(255, 255, 255, 0.1);
+      background: linear-gradient(145deg, #ff2a2a, #e10000);
+    }
+
+    .back-to-pokedex-btn:active {
+      transform: translateY(1px) scale(0.98);
+    }
+
+    .back-to-pokedex-btn:hover::after {
+      width: 40px;
+      height: 40px;
+      opacity: 0.5;
+    }
+
+    /* Pokéball center button animation */
+    @keyframes pokePulse {
+      0% {
+        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7);
+      }
+
+      70% {
+        box-shadow: 0 0 0 12px rgba(255, 255, 255, 0);
+      }
+
+      100% {
+        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+      }
+    }
+
+    .back-to-pokedex-btn:focus {
+      outline: none;
+      animation: pokePulse 1s;
+    }
+
+    /* Icon styling */
+    .back-to-pokedex-btn span {
+      font-size: 1.4em;
+      transition: transform 0.3s;
+    }
+
+    .back-to-pokedex-btn:hover span {
+      transform: translateX(-3px);
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+    h1 {
+      color: var(--primary);
+      text-shadow: 4px 4px 0 var(--secondary), -1px -1px 0 var(--secondary);
+      font-size: 2.5em;
+      margin: 80px 0 20px 0;
+      /* Changed from margin: 20px 0 */
+      letter-spacing: 2px;
+      animation: glow 2s infinite alternate;
+      position: relative;
+      /* Added */
+      z-index: 1;
+      /* Added */
+    }
+
+    @keyframes glow {
+      from {
+        text-shadow: 0 0 5px var(--primary);
+      }
+
+      to {
+        text-shadow: 0 0 20px var(--primary), 0 0 30px var(--accent);
+      }
+    }
+
+    .feature-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .feature-btn {
+      padding: 10px 15px;
+      background-color: var(--secondary);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: 'Press Start 2P', cursive;
+      font-size: 0.7em;
+      transition: all 0.3s;
+    }
+
+    .feature-btn:hover {
+      transform: translateY(-3px);
+      background-color: var(--primary);
+      color: var(--dark);
+    }
+
+    .game-info {
+      display: flex;
+      justify-content: space-around;
+      max-width: 500px;
+      margin: 0 auto 20px;
+      background-color: rgba(0, 0, 0, 0.5);
+      padding: 15px;
+      border-radius: 15px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+      border: 2px solid var(--primary);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .game-info::before {
+      content: "";
+      position: absolute;
+      top: -10px;
+      left: -10px;
+      right: -10px;
+      bottom: -10px;
+      border: 2px dashed var(--primary);
+      border-radius: 20px;
+      animation: rotate 20s linear infinite;
+      pointer-events: none;
+      opacity: 0.5;
+    }
+
+    @keyframes rotate {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    .info-box {
+      font-weight: bold;
+      color: var(--primary);
+      font-size: 0.8em;
+      text-shadow: 0 0 5px black;
+    }
+
+    .board {
+      display: grid;
+      grid-template-columns: repeat(4, 100px);
+      grid-gap: 15px;
+      justify-content: center;
+      margin: 20px auto;
+      max-width: 500px;
+      perspective: 1000px;
+    }
+
+    .card {
+      width: 100px;
+      height: 100px;
+      position: relative;
+      transform-style: preserve-3d;
+      transition: transform 0.6s;
+      cursor: pointer;
+      border-radius: 15px;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+      border: 2px solid var(--primary);
+    }
+
+    .card:hover {
+      transform: scale(1.05);
+    }
+
+    .card-face {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .card-front {
+      background: linear-gradient(135deg, var(--primary), #ffde59);
+      transform: rotateY(0deg);
+    }
+
+    .card-back {
+      background: white;
+      transform: rotateY(180deg);
+      padding: 5px;
+      background: linear-gradient(135deg, #ffffff, #f0f0f0);
+    }
+
+    .card.flipped {
+      transform: rotateY(180deg);
+      animation: flipCard 0.6s;
+    }
+
+    @keyframes flipCard {
+      0% {
+        transform: rotateY(0deg);
+      }
+
+      50% {
+        transform: rotateY(90deg);
+      }
+
+      100% {
+        transform: rotateY(180deg);
+      }
+    }
+
+    .card.matched {
+      transform: rotateY(180deg);
+      cursor: default;
+      box-shadow: 0 0 20px #2ecc71;
+      animation: bounce 0.5s;
+    }
+
+    @keyframes bounce {
+
+      0%,
+      100% {
+        transform: translateY(0) rotateY(180deg);
+      }
+
+      50% {
+        transform: translateY(-15px) rotateY(180deg);
+      }
+    }
+
+    .pokemon-img {
+      max-width: 90%;
+      max-height: 90%;
+      transition: all 0.3s;
+      filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.5));
+    }
+
+    .pokeball-img {
+      width: 60%;
+      transition: all 0.3s;
+      filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.3));
+    }
+
+    .card:hover .pokeball-img {
+      transform: scale(1.1);
+      animation: pulse 1s infinite;
+    }
+
+    @keyframes pulse {
+      0% {
+        transform: scale(1);
+      }
+
+      50% {
+        transform: scale(1.1);
+      }
+
+      100% {
+        transform: scale(1);
+      }
+    }
+
+    .card.matched .pokemon-img {
+      transform: scale(1.1);
+      filter: drop-shadow(0 0 10px rgba(46, 204, 113, 0.7));
+    }
+
+    .controls {
+      margin-top: 30px;
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 12px 25px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 0.9em;
+      font-weight: bold;
+      transition: all 0.3s;
+      font-family: 'Press Start 2P', cursive;
+      box-shadow: 0 4px 0 rgba(0, 0, 0, 0.3);
+      position: relative;
+      overflow: hidden;
+      text-transform: uppercase;
+    }
+
+    .reset-btn {
+      background-color: var(--accent);
+      color: white;
+    }
+
+    .reset-btn:hover {
+      background-color: #ff4757;
+      transform: translateY(-3px);
+      box-shadow: 0 7px 0 rgba(0, 0, 0, 0.3);
+    }
+
+    .reset-btn:active {
+      transform: translateY(2px);
+      box-shadow: 0 2px 0 rgba(0, 0, 0, 0.3);
+    }
+
+    .reset-btn::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: all 0.5s;
+    }
+
+    .reset-btn:hover::before {
+      left: 100%;
+    }
+
+    .difficulty-btn {
+      background-color: var(--secondary);
+      color: white;
+    }
+
+    .difficulty-btn:hover {
+      background-color: #1a5a9a;
+      transform: translateY(-3px);
+      box-shadow: 0 7px 0 rgba(0, 0, 0, 0.3);
+    }
+
+    .difficulty-btn:active {
+      transform: translateY(2px);
+      box-shadow: 0 2px 0 rgba(0, 0, 0, 0.3);
+    }
+
+    .difficulty-btn::after {
+      content: "";
+      position: absolute;
+      top: -50%;
+      left: -60%;
+      width: 200%;
+      height: 200%;
+      background: rgba(255, 255, 255, 0.1);
+      transform: rotate(30deg);
+      transition: all 0.3s;
+    }
+
+    .difficulty-btn:hover::after {
+      left: 100%;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.7);
+      z-index: 100;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-content {
+      background-color: var(--dark);
+      padding: 30px;
+      border-radius: 15px;
+      max-width: 400px;
+      text-align: center;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+      border: 4px solid var(--primary);
+      animation: modalAppear 0.5s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .modal-content::before {
+      content: "";
+      position: absolute;
+      top: -10px;
+      left: -10px;
+      right: -10px;
+      bottom: -10px;
+      border: 2px dashed var(--primary);
+      border-radius: 20px;
+      animation: rotate 20s linear infinite;
+      pointer-events: none;
+      opacity: 0.5;
+    }
+
+    .modal-content h2 {
+      color: var(--primary);
+      margin-bottom: 20px;
+      text-shadow: 2px 2px 0 var(--secondary);
+    }
+
+    .modal-content p {
+      margin: 15px 0;
+      color: white;
+    }
+
+    @keyframes modalAppear {
+      from {
+        transform: scale(0.8);
+        opacity: 0;
+      }
+
+      to {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    .celebration {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 50;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .confetti {
+      position: absolute;
+      width: 15px;
+      height: 15px;
+      opacity: 0;
+      animation: confettiFall 3s linear forwards;
+    }
+
+    @keyframes confettiFall {
+      0% {
+        transform: translateY(-100px) rotate(0deg);
+        opacity: 1;
+      }
+
+      100% {
+        transform: translateY(100vh) rotate(360deg);
+        opacity: 0;
+      }
+    }
+
+    /* Type badges for Pokémon info */
+    .type-badge {
+      padding: 5px 10px;
+      border-radius: 20px;
+      font-size: 0.7em;
+      color: white;
+      text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      margin: 0 3px;
+    }
+
+    /* Type colors */
+    .normal {
+      background-color: #A8A878;
+    }
+
+    .fire {
+      background-color: #F08030;
+    }
+
+    .water {
+      background-color: #6890F0;
+    }
+
+    .electric {
+      background-color: #F8D030;
+    }
+
+    .grass {
+      background-color: #78C850;
+    }
+
+    .ice {
+      background-color: #98D8D8;
+    }
+
+    .fighting {
+      background-color: #C03028;
+    }
+
+    .poison {
+      background-color: #A040A0;
+    }
+
+    .ground {
+      background-color: #E0C068;
+    }
+
+    .flying {
+      background-color: #A890F0;
+    }
+
+    .psychic {
+      background-color: #F85888;
+    }
+
+    .bug {
+      background-color: #A8B820;
+    }
+
+    .rock {
+      background-color: #B8A038;
+    }
+
+    .ghost {
+      background-color: #705898;
+    }
+
+    .dragon {
+      background-color: #7038F8;
+    }
+
+    .dark {
+      background-color: #705848;
+    }
+
+    .steel {
+      background-color: #B8B8D0;
+    }
+
+    .fairy {
+      background-color: #EE99AC;
+    }
+
+    /* Special mode buttons */
+    .mode-btn {
+      background: linear-gradient(135deg, var(--primary), #ffde59);
+      margin: 5px;
+      padding: 8px 15px;
+      border: none;
+      border-radius: 20px;
+      font-family: 'Press Start 2P', cursive;
+      font-size: 0.7em;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .mode-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 10px var(--primary);
+    }
+
+    .mode-btn.active {
+      box-shadow: 0 0 15px var(--accent);
+    }
+
+    /* Responsive design */
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 1.8em;
+      }
+
+      .board {
+        grid-template-columns: repeat(4, 80px);
+        grid-gap: 10px;
+      }
+
+      .card {
+        width: 80px;
+        height: 80px;
+      }
+
+      .btn,
+      .feature-btn {
+        padding: 10px 15px;
+        font-size: 0.7em;
+      }
+
+      .game-info {
+        padding: 10px;
+      }
+
+      .info-box {
+        font-size: 0.6em;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="back-to-pokedex-container">
+    <button class="back-to-pokedex-btn" onclick="goToPokedex()">
+      ⬅️ Back to Pokédex
+    </button>
+  </div>
+  <h1>POKÉMON MEMORY MATCH DELUXE</h1>
+
+  <!-- NEW FEATURE BUTTONS -->
+  <div class="feature-buttons">
+    <button id="sound-btn" class="feature-btn">🔊 SOUND: ON</button>
+    <button id="highscores-btn" class="feature-btn">🏆 HIGH SCORES</button>
+  </div>
+
+  <div class="game-info">
+    <div class="info-box">Moves: <span id="moves">0</span></div>
+    <div class="info-box">Time: <span id="timer">00:00</span></div>
+    <div class="info-box">Matches: <span id="matches">0</span>/8</div>
+  </div>
+
+  <!-- SPECIAL MODES SELECTOR -->
+  <div style="margin: 10px auto; max-width: 500px;">
+    <button class="mode-btn" data-mode="normal">🔄 Normal Mode</button>
+    <button class="mode-btn" data-mode="shiny">✨ Shiny Hunt</button>
+    
+  </div>
+
+  <div id="game-board" class="board"></div>
+
+  <div class="controls">
+    <button class="btn difficulty-btn" onclick="changeDifficulty()">Difficulty</button>
+    <button class="btn reset-btn" onclick="resetGame()">New Game</button>
+  </div>
+
+  <!-- WIN MODAL -->
+  <div id="win-modal" class="modal">
+    <div class="modal-content">
+      <h2>CONGRATULATIONS!</h2>
+      <p>YOU'VE MATCHED ALL POKÉMON!</p>
+      <p>MOVES: <span id="final-moves">0</span></p>
+      <p>TIME: <span id="final-time">00:00</span></p>
+      <button class="btn reset-btn" onclick="resetGame(); closeModal()">PLAY AGAIN</button>
+    </div>
+  </div>
+
+  <!-- HIGH SCORES MODAL -->
+  <div id="highscores-modal" class="modal">
+    <div class="modal-content">
+      <h2>POKÉMASTER HALL OF FAME</h2>
+      <div id="scores-list" style="max-height: 300px; overflow-y: auto;"></div>
+      <button class="btn" onclick="closeModal()" style="margin-top: 20px;">BACK</button>
+    </div>
+  </div>
+
+  <div id="celebration" class="celebration"></div>
+
+  <!-- AUDIO ELEMENTS -->
+  <audio id="flip-sound" src="https://assets.mixkit.co/sfx/preview/mixkit-arcade-game-jump-coin-216.mp3"></audio>
+  <audio id="match-sound" src="https://assets.mixkit.co/sfx/preview/mixkit-unlock-game-notification-253.mp3"></audio>
+  <audio id="win-sound" src="https://assets.mixkit.co/sfx/preview/mixkit-winning-chimes-2015.mp3"></audio>
+  <audio id="toggle-sound" src="paglu.mp3"></audio>
+  <audio id="bg-music" loop src="paglu.mp3"></audio>
+
+  <script>
+
+    function goToPokedex() {
+      // Change this to your actual Pokédex page URL
+      window.location.href = '../Demo.html';
+    }
+
+
+    // Game configuration
+    const config = {
+      easy: { pairs: 8, columns: 4 },
+      medium: { pairs: 12, columns: 6 },
+      hard: { pairs: 16, columns: 6 }
+    };
+    let currentDifficulty = 'easy';
+    let currentMode = 'normal';
+
+    // Pokémon data with image URLs and types
+    const allPokemon = [
+      { name: "Pikachu", img: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/25.png", types: ["ELECTRIC"] },
+      { name: "Bulbasaur", img: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png", types: ["GRASS", "POISON"] },
+      { name: "Charmander", img: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/4.png", types: ["FIRE"] },
+      { name: "Squirtle", img: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/7.png", types: ["WATER"] },
+      { name: "Jigglypuff", img: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/39.png", types: ["NORMAL", "FAIRY"] },
+      { name: "Meowth", img: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/52.png", types: ["NORMAL"] },
+      { name: "Psyduck", img: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/54.png", types: ["WATER"] },
+      { name: "Snorlax", img: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/143.png", types: ["NORMAL"] },
+      { name: "Eevee", img: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/133.png", types: ["NORMAL"] },
+      { name: "Mewtwo", img: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/150.png", types: ["PSYCHIC"] },
+      { name: "Gengar", img: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/94.png", types: ["GHOST", "POISON"] },
+      { name: "Dragonite", img: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/149.png", types: ["DRAGON", "FLYING"] },
+      { name: "Lucario", img: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/448.png", types: ["FIGHTING", "STEEL"] },
+      { name: "Greninja", img: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/658.png", types: ["WATER", "DARK"] },
+      { name: "Charizard", img: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/6.png", types: ["FIRE", "FLYING"] },
+      { name: "Umbreon", img: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/197.png", types: ["DARK"] }
+    ];
+
+    // Game state
+    let cards = [];
+    let flippedCards = [];
+    let matchedPairs = 0;
+    let canFlip = true;
+    let moves = 0;
+    let seconds = 0;
+    let timer;
+    let gameActive = false;
+    let soundEnabled = true;
+
+    // Sound system
+    const sounds = {
+      flip: document.getElementById('flip-sound'),
+      match: document.getElementById('match-sound'),
+      win: document.getElementById('win-sound'),
+      welcome: document.getElementById('welcome-sound'),
+      toggle: document.getElementById('toggle-sound')
+    };
+
+    // Toggle sound function - completely rewritten
+    function toggleSound() {
+  soundEnabled = !soundEnabled;
+
+  // Update button text
+  const btn = document.getElementById('sound-btn');
+  btn.textContent = `🔊 SOUND: ${soundEnabled ? 'ON' : 'OFF'}`;
+
+  // Play toggle sound only when enabling
+  if (soundEnabled && sounds.toggle) {
+    sounds.toggle.currentTime = 0;
+    sounds.toggle.play().catch(e => console.log("Toggle sound error:", e));
+  }
+
+  // Mute/unmute all sounds including background music
+  Object.values(sounds).forEach(sound => {
+    if (sound) {
+      sound.muted = !soundEnabled;
+    }
+  });
+  
+  // Handle background music separately
+  const bgMusic = document.getElementById('bg-music');
+  if (bgMusic) {
+    bgMusic.muted = !soundEnabled;
+    if (soundEnabled) {
+      // Try to play when enabling sound
+      bgMusic.play().catch(e => console.log("Background music play error:", e));
+    } else {
+      bgMusic.pause();
+    }
+  }
+
+  // Save preference
+  localStorage.setItem('pokeSoundEnabled', soundEnabled);
+}
+
+    // Initialize the game
+    function initGame() {
+      clearInterval(timer);
+      const settings = config[currentDifficulty];
+      let selectedPokemon = allPokemon.slice(0, settings.pairs);
+
+      // Apply special mode modifiers
+      switch (currentMode) {
+        case 'shiny':
+          selectedPokemon = selectedPokemon.map(pokemon => ({
+            ...pokemon,
+            img: pokemon.img.replace('sprites/pokemon', 'sprites/pokemon/shiny')
+          }));
+          break;
+        case 'electric':
+          selectedPokemon = selectedPokemon.filter(pokemon =>
+            pokemon.types.includes('ELECTRIC'));
+          break;
+      }
+
+      // Create pairs and shuffle
+      cards = [...selectedPokemon, ...selectedPokemon];
+      shuffle(cards);
+
+      // Reset game state
+      flippedCards = [];
+      matchedPairs = 0;
+      moves = 0;
+      seconds = 0;
+      gameActive = true;
+
+      // Update UI
+      document.getElementById('moves').textContent = moves;
+      document.getElementById('matches').textContent = `${matchedPairs}/${settings.pairs}`;
+      document.getElementById('timer').textContent = '00:00';
+
+      // Create board
+      const gameBoard = document.getElementById("game-board");
+      gameBoard.innerHTML = "";
+      gameBoard.style.gridTemplateColumns = `repeat(${settings.columns}, 100px)`;
+
+      // Create cards
+      cards.forEach((pokemon, index) => {
+        const card = document.createElement("div");
+        card.classList.add("card");
+        card.dataset.index = index;
+        card.dataset.name = pokemon.name;
+
+        // Card front (Pokéball)
+        const cardFront = document.createElement("div");
+        cardFront.classList.add("card-face", "card-front");
+        const pokeballImg = document.createElement("img");
+        pokeballImg.src = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png";
+        pokeballImg.classList.add("pokeball-img");
+        pokeballImg.alt = "Pokéball";
+        cardFront.appendChild(pokeballImg);
+
+        // Card back (Pokémon)
+        const cardBack = document.createElement("div");
+        cardBack.classList.add("card-face", "card-back");
+        const pokemonImg = document.createElement("img");
+        pokemonImg.src = pokemon.img;
+        pokemonImg.classList.add("pokemon-img");
+        pokemonImg.alt = pokemon.name;
+
+        // Add Pokémon type badges
+        const typeContainer = document.createElement("div");
+        typeContainer.style.position = "absolute";
+        typeContainer.style.bottom = "5px";
+        typeContainer.style.width = "100%";
+        typeContainer.style.display = "flex";
+        typeContainer.style.justifyContent = "center";
+
+        pokemon.types.forEach(type => {
+          const typeBadge = document.createElement("span");
+          typeBadge.className = `type-badge ${type.toLowerCase()}`;
+          typeBadge.textContent = type;
+          typeContainer.appendChild(typeBadge);
+        });
+
+        cardBack.appendChild(pokemonImg);
+        cardBack.appendChild(typeContainer);
+
+        card.appendChild(cardFront);
+        card.appendChild(cardBack);
+        card.addEventListener("click", flipCard);
+        gameBoard.appendChild(card);
+      });
+
+      // Start timer
+      timer = setInterval(updateTimer, 1000);
+    }
+
+    // Shuffle cards (Fisher-Yates algorithm)
+    function shuffle(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
+    }
+
+    // Flip a card
+    function flipCard() {
+      if (!gameActive || !canFlip || this.classList.contains("flipped") || this.classList.contains("matched")) {
+        return;
+      }
+
+      // Play flip sound
+      if (soundEnabled && sounds.flip) {
+        sounds.flip.currentTime = 0;
+        sounds.flip.play().catch(e => console.log("Flip sound error:", e));
+      }
+
+      // First move starts the game
+      if (moves === 0 && flippedCards.length === 0) {
+        gameActive = true;
+      }
+
+      this.classList.add("flipped");
+      flippedCards.push(this);
+
+      if (flippedCards.length === 2) {
+        moveCompleted();
+        checkMatch();
+      }
+    }
+
+    // Track moves
+    function moveCompleted() {
+      moves++;
+      document.getElementById('moves').textContent = moves;
+      canFlip = false;
+    }
+
+    // Check for a match
+    function checkMatch() {
+      const [card1, card2] = flippedCards;
+      const isMatch = card1.dataset.name === card2.dataset.name;
+
+      if (isMatch) {
+        // Play match sound
+        if (soundEnabled && sounds.match) {
+          sounds.match.currentTime = 0;
+          sounds.match.play().catch(e => console.log("Match sound error:", e));
+        }
+
+        card1.classList.add("matched");
+        card2.classList.add("matched");
+        matchedPairs++;
+        const settings = config[currentDifficulty];
+        document.getElementById('matches').textContent = `${matchedPairs}/${settings.pairs}`;
+
+        // Check for win
+        if (matchedPairs === settings.pairs) {
+          gameWon();
+        }
+      } else {
+        setTimeout(() => {
+          card1.classList.remove("flipped");
+          card2.classList.remove("flipped");
+        }, 1000);
+      }
+
+      setTimeout(() => {
+        flippedCards = [];
+        canFlip = true;
+      }, isMatch ? 300 : 1000);
+    }
+
+    // Update timer
+    function updateTimer() {
+      if (!gameActive) return;
+
+      seconds++;
+      const minutes = Math.floor(seconds / 60).toString().padStart(2, '0');
+      const remainingSeconds = (seconds % 60).toString().padStart(2, '0');
+      document.getElementById('timer').textContent = `${minutes}:${remainingSeconds}`;
+    }
+
+    // Handle game win
+    function gameWon() {
+      gameActive = false;
+      clearInterval(timer);
+
+      // Play win sound
+      if (soundEnabled && sounds.win) {
+        sounds.win.currentTime = 0;
+        sounds.win.play().catch(e => console.log("Win sound error:", e));
+      }
+
+      // Save high score
+      saveHighScore();
+
+      // Update modal
+      document.getElementById('final-moves').textContent = moves;
+      document.getElementById('final-time').textContent = document.getElementById('timer').textContent;
+
+      // Show modal
+      document.getElementById('win-modal').style.display = 'flex';
+
+      // Create celebration
+      createCelebration();
+    }
+
+    // Save high score
+    function saveHighScore() {
+      const highScores = JSON.parse(localStorage.getItem('pokeHighScores')) || [];
+      highScores.push({
+        moves,
+        time: document.getElementById('timer').textContent,
+        difficulty: currentDifficulty,
+        mode: currentMode,
+        date: new Date().toLocaleDateString()
+      });
+
+      // Sort by fewest moves
+      highScores.sort((a, b) => a.moves - b.moves);
+
+      // Keep top 10
+      if (highScores.length > 10) {
+        highScores.length = 10;
+      }
+
+      localStorage.setItem('pokeHighScores', JSON.stringify(highScores));
+    }
+
+    // Show high scores
+    function showHighScores() {
+      const highScores = JSON.parse(localStorage.getItem('pokeHighScores')) || [];
+      const scoresList = document.getElementById('scores-list');
+      scoresList.innerHTML = '';
+
+      if (highScores.length === 0) {
+        scoresList.innerHTML = '<p>No scores yet!</p>';
+      } else {
+        highScores.forEach((score, index) => {
+          const scoreItem = document.createElement('div');
+          scoreItem.style.margin = '10px 0';
+          scoreItem.style.padding = '10px';
+          scoreItem.style.background = 'rgba(0,0,0,0.3)';
+          scoreItem.style.borderRadius = '8px';
+          scoreItem.innerHTML = `
+            <p>#${index + 1} - ${score.moves} moves (${score.time})</p>
+            <small>${score.difficulty.toUpperCase()} | ${score.mode.toUpperCase()} | ${score.date}</small>
+          `;
+          scoresList.appendChild(scoreItem);
+        });
+      }
+
+      document.getElementById('highscores-modal').style.display = 'flex';
+    }
+
+    // Create confetti celebration
+    function createCelebration() {
+      const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff', '#ff9900', '#ff00cc'];
+      const container = document.getElementById('celebration');
+      container.innerHTML = '';
+
+      for (let i = 0; i < 150; i++) {
+        const confetti = document.createElement('div');
+        confetti.className = 'confetti';
+        confetti.style.left = Math.random() * 100 + 'vw';
+        confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+        confetti.style.animationDelay = Math.random() * 2 + 's';
+
+        // Random shape (square or circle)
+        if (Math.random() > 0.5) {
+          confetti.style.borderRadius = '50%';
+        }
+
+        // Random size
+        const size = Math.random() * 15 + 5;
+        confetti.style.width = size + 'px';
+        confetti.style.height = size + 'px';
+
+        container.appendChild(confetti);
+      }
+
+      // Remove celebration after animation
+      setTimeout(() => {
+        container.innerHTML = '';
+      }, 3000);
+    }
+
+    // Close modal
+    function closeModal() {
+      document.getElementById('win-modal').style.display = 'none';
+      document.getElementById('highscores-modal').style.display = 'none';
+    }
+
+    // Change difficulty
+    function changeDifficulty() {
+      const difficulties = ['easy', 'medium', 'hard'];
+      const currentIndex = difficulties.indexOf(currentDifficulty);
+      currentDifficulty = difficulties[(currentIndex + 1) % difficulties.length];
+      resetGame();
+    }
+
+    // Change game mode
+    function setGameMode(mode) {
+      currentMode = mode;
+
+      // Update active button styling
+      document.querySelectorAll('.mode-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.mode === mode);
+      });
+
+      resetGame();
+    }
+
+    // Reset the game
+    function resetGame() {
+      closeModal();
+      initGame();
+    }
+
+    // Event listeners
+    document.getElementById('sound-btn').addEventListener('click', toggleSound);
+    document.getElementById('highscores-btn').addEventListener('click', showHighScores);
+
+    // Mode buttons
+    document.querySelectorAll('.mode-btn').forEach(btn => {
+      btn.addEventListener('click', () => setGameMode(btn.dataset.mode));
+    });
+
+    // Start the game on load
+    window.onload = function() {
+  // Initialize sound preference
+  const savedSoundPref = localStorage.getItem('pokeSoundEnabled');
+  soundEnabled = savedSoundPref !== null ? savedSoundPref === 'true' : true;
+
+  // Update button text
+  document.getElementById('sound-btn').textContent = `🔊 SOUND: ${soundEnabled ? 'ON' : 'OFF'}`;
+
+  // Initialize audio elements
+  Object.values(sounds).forEach(sound => {
+    if (sound) {
+      sound.volume = 0.5;
+      sound.muted = !soundEnabled;
+    }
+  });
+
+  // Initialize background music
+  const bgMusic = document.getElementById('bg-music');
+  if (bgMusic) {
+    bgMusic.volume = 0.3;
+    bgMusic.muted = !soundEnabled;
+    
+    // Try to play background music after user interaction
+    const playMusic = () => {
+      if (soundEnabled) {
+        bgMusic.play().catch(e => console.log("Background music play error:", e));
+      }
+    };
+    
+    // Try immediately (might fail due to autoplay policies)
+    playMusic();
+    
+    // Set up fallback for when autoplay is blocked
+    document.body.addEventListener('click', () => {
+      playMusic();
+    }, { once: true });
+  }
+
+  initGame();
+  document.querySelector('.mode-btn[data-mode="normal"]').classList.add('active');
+};
+
+  </script>
+</body>
+
+</html>

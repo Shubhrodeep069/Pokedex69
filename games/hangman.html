@@ -1,0 +1,1135 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Pokémon Hangman Deluxe</title>
+  <style>
+    :root {
+      --primary: #ffcb05;
+      --secondary: #2a75bb;
+      --accent: #e63946;
+      --dark: #3c5aa6;
+      --light: #f0f8ff;
+    }
+
+    @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+    body {
+      font-family: 'Press Start 2P', cursive;
+      background-color: var(--dark);
+      color: white;
+      text-align: center;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      background-image: url('https://i.imgur.com/XWuT6f0.png');
+      background-size: cover;
+      background-attachment: fixed;
+    }
+
+
+
+
+
+    .back-to-pokedex-btn {
+      padding: 12px 20px;
+      font-size: 1.1em;
+      background: linear-gradient(135deg, #ff0000, #cc0000);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .back-to-pokedex-btn::after {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(to bottom right,
+          rgba(255, 255, 255, 0.3) 0%,
+          rgba(255, 255, 255, 0) 60%);
+      transform: rotate(30deg);
+      transition: all 0.3s;
+    }
+
+    .back-to-pokedex-btn:hover::after {
+      animation: shine 1.5s infinite;
+    }
+
+    @keyframes shine {
+      0% {
+        left: -50%;
+      }
+
+      100% {
+        left: 150%;
+      }
+    }
+
+
+
+    h1 {
+      color: var(--primary);
+      text-shadow: 4px 4px 0 var(--secondary), -1px -1px 0 var(--secondary);
+      font-size: 2.5em;
+      margin: 20px 0;
+      letter-spacing: 2px;
+      animation: glow 2s infinite alternate;
+    }
+
+    @keyframes glow {
+      from {
+        text-shadow: 0 0 5px var(--primary);
+      }
+
+      to {
+        text-shadow: 0 0 20px var(--primary), 0 0 30px var(--accent);
+      }
+    }
+
+    .game-container {
+      background-color: rgba(0, 0, 0, 0.7);
+      border-radius: 15px;
+      padding: 25px;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+      margin-top: 20px;
+      border: 4px solid var(--primary);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .game-container::before {
+      content: "";
+      position: absolute;
+      top: -10px;
+      left: -10px;
+      right: -10px;
+      bottom: -10px;
+      border: 2px dashed var(--primary);
+      border-radius: 20px;
+      animation: rotate 20s linear infinite;
+      pointer-events: none;
+      opacity: 0.5;
+    }
+
+    @keyframes rotate {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    .difficulty-selector {
+      margin: 20px 0;
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+    }
+
+    .difficulty-btn {
+      padding: 10px 20px;
+      background-color: var(--secondary);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: 'Press Start 2P', cursive;
+      font-size: 1em;
+      transition: all 0.3s;
+      box-shadow: 0 4px 0 var(--dark);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .difficulty-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 0 var(--dark);
+    }
+
+    .difficulty-btn:active {
+      transform: translateY(2px);
+      box-shadow: 0 2px 0 var(--dark);
+    }
+
+    .difficulty-btn.active {
+      background-color: var(--primary);
+      color: var(--dark);
+    }
+
+    .difficulty-btn::after {
+      content: "";
+      position: absolute;
+      top: -50%;
+      left: -60%;
+      width: 200%;
+      height: 200%;
+      background: rgba(255, 255, 255, 0.1);
+      transform: rotate(30deg);
+      transition: all 0.3s;
+    }
+
+    .difficulty-btn:hover::after {
+      left: 100%;
+    }
+
+    .hangman-container {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      flex-wrap: wrap;
+      margin: 20px 0;
+    }
+
+    .hangman-art {
+      white-space: pre;
+      font-family: monospace;
+      line-height: 1.3;
+      font-size: 1.1em;
+      color: var(--primary);
+      text-align: left;
+      min-width: 200px;
+      background-color: rgba(0, 0, 0, 0.3);
+      padding: 15px;
+      border-radius: 10px;
+      border: 2px solid var(--primary);
+    }
+
+    .pokemon-display {
+      flex: 1;
+      min-width: 300px;
+      padding: 10px;
+    }
+
+    .word-display {
+      font-size: 2.2em;
+      letter-spacing: 0.3em;
+      margin: 20px 0;
+      font-weight: bold;
+      color: var(--primary);
+      text-shadow: 0 0 10px rgba(255, 203, 5, 0.5);
+      min-height: 1.5em;
+    }
+
+    .letter {
+      display: inline-block;
+      transition: all 0.3s;
+    }
+
+    .letter.revealed {
+      transform: translateY(-10px);
+      color: #2ecc71;
+      text-shadow: 0 0 15px #2ecc71;
+    }
+
+    .guessed-letters {
+      margin: 20px 0;
+      min-height: 30px;
+      color: var(--accent);
+      font-size: 1.2em;
+    }
+
+    .message {
+      font-weight: bold;
+      margin: 20px 0;
+      min-height: 24px;
+      font-size: 1.2em;
+      color: var(--primary);
+      text-shadow: 0 0 5px black;
+      transition: all 0.5s;
+    }
+
+    .keyboard {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 8px;
+      margin: 30px 0;
+    }
+
+    .letter-btn {
+      width: 50px;
+      height: 50px;
+      font-size: 1.5em;
+      font-weight: bold;
+      background-color: var(--secondary);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: 'Press Start 2P', cursive;
+      box-shadow: 0 4px 0 #1a4b8c;
+      position: relative;
+    }
+
+    .letter-btn:hover:not(:disabled) {
+      background-color: var(--primary);
+      color: var(--dark);
+      transform: translateY(-3px);
+      box-shadow: 0 7px 0 #1a4b8c;
+    }
+
+    .letter-btn:active:not(:disabled) {
+      transform: translateY(2px);
+      box-shadow: 0 2px 0 #1a4b8c;
+    }
+
+    .letter-btn:disabled {
+      cursor: default;
+      opacity: 0.5;
+      transform: scale(0.9);
+    }
+
+    .letter-btn.correct {
+      background-color: #2ecc71;
+      box-shadow: 0 4px 0 #239955;
+    }
+
+    .letter-btn.wrong {
+      background-color: var(--accent);
+      box-shadow: 0 4px 0 #a32734;
+    }
+
+    .controls {
+      margin-top: 20px;
+    }
+
+    .reset-btn {
+      padding: 15px 30px;
+      background-color: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 1.2em;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-family: 'Press Start 2P', cursive;
+      box-shadow: 0 6px 0 #a32734;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .reset-btn:hover {
+      background-color: #ff4757;
+      transform: translateY(-3px);
+      box-shadow: 0 9px 0 #a32734;
+    }
+
+    .reset-btn:active {
+      transform: translateY(3px);
+      box-shadow: 0 3px 0 #a32734;
+    }
+
+    .reset-btn::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: all 0.5s;
+    }
+
+    .reset-btn:hover::before {
+      left: 100%;
+    }
+
+    .stats {
+      display: flex;
+      justify-content: space-around;
+      margin: 20px 0;
+      font-size: 1.1em;
+      background-color: rgba(0, 0, 0, 0.3);
+      padding: 15px;
+      border-radius: 10px;
+      border: 2px solid var(--primary);
+    }
+
+    .stat {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .stat-value {
+      font-size: 1.5em;
+      color: var(--primary);
+      margin-top: 5px;
+    }
+
+    .pokemon-sprite {
+      width: 300px;
+      height: 300px;
+      object-fit: contain;
+      margin: 0 auto;
+      display: block;
+      filter: drop-shadow(0 0 10px rgba(255, 203, 5, 0.7));
+      transition: all 0.5s;
+      opacity: 0;
+      transform: scale(0.5);
+    }
+
+    .pokemon-sprite.revealed {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    .type-display {
+      margin-top: 10px;
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .type-badge {
+      padding: 5px 10px;
+      border-radius: 20px;
+      font-size: 0.8em;
+      color: white;
+      text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Type colors */
+    .normal {
+      background-color: #A8A878;
+    }
+
+    .fire {
+      background-color: #F08030;
+    }
+
+    .water {
+      background-color: #6890F0;
+    }
+
+    .electric {
+      background-color: #F8D030;
+    }
+
+    .grass {
+      background-color: #78C850;
+    }
+
+    .ice {
+      background-color: #98D8D8;
+    }
+
+    .fighting {
+      background-color: #C03028;
+    }
+
+    .poison {
+      background-color: #A040A0;
+    }
+
+    .ground {
+      background-color: #E0C068;
+    }
+
+    .flying {
+      background-color: #A890F0;
+    }
+
+    .psychic {
+      background-color: #F85888;
+    }
+
+    .bug {
+      background-color: #A8B820;
+    }
+
+    .rock {
+      background-color: #B8A038;
+    }
+
+    .ghost {
+      background-color: #705898;
+    }
+
+    .dragon {
+      background-color: #7038F8;
+    }
+
+    .dark {
+      background-color: #705848;
+    }
+
+    .steel {
+      background-color: #B8B8D0;
+    }
+
+    .fairy {
+      background-color: #EE99AC;
+    }
+
+    /* Animations */
+    @keyframes bounce {
+
+      0%,
+      100% {
+        transform: translateY(0);
+      }
+
+      50% {
+        transform: translateY(-10px);
+      }
+    }
+
+    @keyframes shake {
+
+      0%,
+      100% {
+        transform: translateX(0);
+      }
+
+      20%,
+      60% {
+        transform: translateX(-5px);
+      }
+
+      40%,
+      80% {
+        transform: translateX(5px);
+      }
+    }
+
+    .shake {
+      animation: shake 0.5s;
+    }
+
+    .celebration {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 100;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .confetti {
+      position: absolute;
+      width: 15px;
+      height: 15px;
+      opacity: 0;
+      animation: confettiFall 3s linear forwards;
+    }
+
+    @keyframes confettiFall {
+      0% {
+        transform: translateY(-100px) rotate(0deg);
+        opacity: 1;
+      }
+
+      100% {
+        transform: translateY(100vh) rotate(360deg);
+        opacity: 0;
+      }
+    }
+
+    /* Responsive design */
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 1.8em;
+      }
+
+      .letter-btn {
+        width: 40px;
+        height: 40px;
+        font-size: 1.2em;
+      }
+
+      .word-display {
+        font-size: 1.5em;
+        letter-spacing: 0.2em;
+      }
+
+      .hangman-container {
+        flex-direction: column;
+      }
+    }
+
+
+    /* Music Control Styles */
+.music-control {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    text-align: center;
+}
+
+#music-toggle {
+    background: rgb(255, 255, 255);
+    border: 2px solid #3b4cca; /* Using --secondary color directly */
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    font-size: 1.6em;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s;
+}
+
+#music-toggle:hover {
+    transform: scale(1.1);
+    background: white;
+}
+
+#music-toggle.playing {
+    background: rgba(255, 255, 255, 0.9);
+}
+
+#music-toggle.muted {
+    opacity: 0.7;
+    background: rgb(255, 255, 255);
+}
+
+/* Optional: Add these CSS variables if you want the exact color scheme */
+:root {
+    --primary: #00ffff;
+    /* --secondary: #3b4cca;
+    --correct: #4CAF50;
+    --incorrect: #F44336;
+    --selected: #2196F3; */
+}
+  </style>
+</head>
+
+<body>
+  <div class="music-control">
+    <button id="music-toggle" onclick="toggleMusic()">🔇</button>
+    <audio id="bg-music" loop>
+        <source src="paglu.mp3" type="audio/mpeg">
+    </audio>
+</div>
+
+  <div class="back-to-pokedex-container">
+    <button class="back-to-pokedex-btn" onclick="goToPokedex()">
+      ⬅️ Back to Pokédex
+    </button>
+  </div>
+  <h1>POKÉMON HANGMAN</h1>
+
+  <div class="difficulty-selector">
+    <button class="difficulty-btn active" data-difficulty="easy">EASY</button>
+    <button class="difficulty-btn" data-difficulty="medium">MEDIUM</button>
+    <button class="difficulty-btn" data-difficulty="hard">HARD</button>
+  </div>
+
+  <div class="game-container">
+    <div class="stats">
+      <div class="stat">
+        <div>WRONG GUESSES</div>
+        <div class="stat-value" id="wrong-guesses">0/6</div>
+      </div>
+      <div class="stat">
+        <div>SCORE</div>
+        <div class="stat-value" id="score">0</div>
+      </div>
+      <div class="stat">
+        <div>STREAK</div>
+        <div class="stat-value" id="streak">0</div>
+      </div>
+    </div>
+
+    <div class="hangman-container">
+      <div class="hangman-art" id="hangman-art"></div>
+      <div class="pokemon-display">
+        <img class="pokemon-sprite" id="pokemon-sprite" src="" alt="Pokémon">
+        <div class="type-display" id="type-display"></div>
+      </div>
+    </div>
+
+    <div class="message" id="message">GUESS THE POKÉMON!</div>
+    <div class="word-display" id="word-display"></div>
+    <div class="guessed-letters" id="guessed-letters"></div>
+
+    <div class="keyboard" id="keyboard"></div>
+
+    <div class="controls">
+      <button class="reset-btn" id="reset-btn">NEW GAME</button>
+    </div>
+  </div>
+
+  <script>
+
+
+    function goToPokedex() {
+      // Change this to your actual Pokédex page URL
+      window.location.href = '../Demo.html';
+    }
+
+    // Pokémon data with names, sprites, and types
+    const pokemonData = {
+      easy: [
+        { name: "PIKACHU", sprite: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/25.png", types: ["ELECTRIC"] },
+        { name: "EEVEE", sprite: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/133.png", types: ["NORMAL"] },
+        { name: "MEOWTH", sprite: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/52.png", types: ["NORMAL"] },
+        { name: "JIGGLYPUFF", sprite: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/39.png", types: ["NORMAL", "FAIRY"] },
+        { name: "PSYDUCK", sprite: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/54.png", types: ["WATER"] },
+        { name: "CATERPIE", sprite: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10.png", types: ["BUG"] },
+        { name: "GEODUDE", sprite: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/74.png", types: ["ROCK", "GROUND"] },
+        { name: "SQUIRTLE", sprite: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/7.png", types: ["WATER"] },
+        { name: "BULBASAUR", sprite: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png", types: ["GRASS", "POISON"] },
+        { name: "CHARMANDER", sprite: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/4.png", types: ["FIRE"] },
+        { name: "PIDGEY", sprite: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/16.png", types: ["NORMAL", "FLYING"] },
+        { name: "ODDISH", sprite: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/43.png", types: ["GRASS", "POISON"] }
+      ],
+      medium: [
+        { name: "CHARIZARD", sprite: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/6.png", types: ["FIRE", "FLYING"] },
+        { name: "BLASTOISE", sprite: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/9.png", types: ["WATER"] },
+        { name: "VENUSAUR", sprite: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/3.png", types: ["GRASS", "POISON"] },
+        { name: "GYARADOS", sprite: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/130.png", types: ["WATER", "FLYING"] },
+        { name: "ALAKAZAM", sprite: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/65.png", types: ["PSYCHIC"] },
+        { name: "MACHAMP", sprite: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/68.png", types: ["FIGHTING"] },
+        { name: "GENGAR", sprite: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/94.png", types: ["GHOST", "POISON"] },
+        { name: "DRAGONITE", sprite: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/149.png", types: ["DRAGON", "FLYING"] },
+        { name: "ARCANINE", sprite: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/59.png", types: ["FIRE"] },
+        { name: "LAPRAS", sprite: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/131.png", types: ["WATER", "ICE"] },
+        { name: "SCYTHER", sprite: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/123.png", types: ["BUG", "FLYING"] },
+        { name: "ELECTABUZZ", sprite: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/125.png", types: ["ELECTRIC"] }
+      ],
+      hard: [
+        { name: "TYRANITAR", sprite: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/248.png", types: ["ROCK", "DARK"] },
+        { name: "METAGROSS", sprite: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/376.png", types: ["STEEL", "PSYCHIC"] },
+        { name: "SALAMENCE", sprite: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/373.png", types: ["DRAGON", "FLYING"] },
+        { name: "LUCARIO", sprite: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/448.png", types: ["FIGHTING", "STEEL"] },
+        { name: "GARCHOMP", sprite: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/445.png", types: ["DRAGON", "GROUND"] },
+        { name: "INFERNAPE", sprite: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/392.png", types: ["FIRE", "FIGHTING"] },
+        { name: "EMPOLEON", sprite: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/395.png", types: ["WATER", "STEEL"] },
+        { name: "TORTTERRA", sprite: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/389.png", types: ["GRASS", "GROUND"] },
+        { name: "MILOTIC", sprite: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/350.png", types: ["WATER"] },
+        { name: "AGGRON", sprite: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/306.png", types: ["STEEL", "ROCK"] },
+        { name: "FLYGON", sprite: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/330.png", types: ["GROUND", "DRAGON"] },
+        { name: "ABSOL", sprite: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/359.png", types: ["DARK"] }
+      ]
+    };
+
+    // Hangman ASCII art stages
+    const hangmanStages = [
+      `
+        +-----+
+        |     |
+              |
+              |
+              |
+              |
+        =========
+      `,
+      `
+        +-----+
+        |     |
+        O     |
+              |
+              |
+              |
+        =========
+      `,
+      `
+        +-----+
+        |     |
+        O     |
+        |     |
+              |
+              |
+        =========
+      `,
+      `
+        +-----+
+        |     |
+        O     |
+       /|     |
+              |
+              |
+        =========
+      `,
+      `
+        +-----+
+        |     |
+        O     |
+       /|\\    |
+              |
+              |
+        =========
+      `,
+      `
+        +-----+
+        |     |
+        O     |
+       /|\\    |
+       /      |
+              |
+        =========
+      `,
+      `
+        +-----+
+        |     |
+        O     |
+       /|\\    |
+       / \\    |
+              |
+        =========
+      `
+    ];
+
+    // Game state
+    let currentDifficulty = 'easy';
+    let currentPokemon = null;
+    let guessedLetters = [];
+    let wrongGuesses = 0;
+    let gameActive = false;
+    let score = 0;
+    let streak = 0;
+    let maxStreak = 0;
+
+    // DOM elements
+    const hangmanArtEl = document.getElementById('hangman-art');
+    const wordDisplayEl = document.getElementById('word-display');
+    const guessedLettersEl = document.getElementById('guessed-letters');
+    const messageEl = document.getElementById('message');
+    const keyboardEl = document.getElementById('keyboard');
+    const resetBtn = document.getElementById('reset-btn');
+    const difficultyBtns = document.querySelectorAll('.difficulty-btn');
+    const wrongGuessesEl = document.getElementById('wrong-guesses');
+    const scoreEl = document.getElementById('score');
+    const streakEl = document.getElementById('streak');
+    const pokemonSpriteEl = document.getElementById('pokemon-sprite');
+    const typeDisplayEl = document.getElementById('type-display');
+
+    // Initialize the game
+    function initGame() {
+      // Select a random Pokémon based on difficulty
+      const possiblePokemon = pokemonData[currentDifficulty];
+      currentPokemon = possiblePokemon[Math.floor(Math.random() * possiblePokemon.length)];
+
+      // Reset game state
+      guessedLetters = [];
+      wrongGuesses = 0;
+      gameActive = true;
+
+      // Hide Pokémon sprite initially
+      pokemonSpriteEl.src = currentPokemon.sprite;
+      pokemonSpriteEl.alt = currentPokemon.name;
+      pokemonSpriteEl.classList.remove('revealed');
+
+      // Set up type badges
+      typeDisplayEl.innerHTML = '';
+      currentPokemon.types.forEach(type => {
+        const typeBadge = document.createElement('span');
+        typeBadge.className = `type-badge ${type.toLowerCase()}`;
+        typeBadge.textContent = type;
+        typeDisplayEl.appendChild(typeBadge);
+      });
+
+      // Update UI
+      updateHangmanArt();
+      updateWordDisplay();
+      updateGuessedLetters();
+      updateStats();
+      messageEl.textContent = 'GUESS THE POKÉMON!';
+      messageEl.style.color = 'var(--primary)';
+
+      // Create keyboard
+      createKeyboard();
+
+      // Set difficulty buttons
+      difficultyBtns.forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.difficulty === currentDifficulty);
+      });
+    }
+
+    // Update hangman ASCII art
+    function updateHangmanArt() {
+      hangmanArtEl.textContent = hangmanStages[wrongGuesses];
+      wrongGuessesEl.textContent = `${wrongGuesses}/6`;
+    }
+
+    // Update the word display with underscores and guessed letters
+    function updateWordDisplay() {
+      wordDisplayEl.innerHTML = '';
+      for (const letter of currentPokemon.name) {
+        const letterSpan = document.createElement('span');
+        letterSpan.className = 'letter';
+        letterSpan.textContent = (guessedLetters.includes(letter) || !gameActive) ? letter : '_';
+
+        if (guessedLetters.includes(letter)) {
+          letterSpan.classList.add('revealed');
+        }
+
+        wordDisplayEl.appendChild(letterSpan);
+
+        // Add space between letters
+        wordDisplayEl.appendChild(document.createTextNode(' '));
+      }
+    }
+
+    // Update the guessed letters display
+    function updateGuessedLetters() {
+      const wrongLetters = guessedLetters.filter(letter => !currentPokemon.name.includes(letter));
+      guessedLettersEl.textContent = wrongLetters.length > 0
+        ? `WRONG LETTERS: ${wrongLetters.join(', ')}`
+        : '';
+    }
+
+    // Update game statistics
+    function updateStats() {
+      scoreEl.textContent = score;
+      streakEl.textContent = streak;
+    }
+
+    // Create the keyboard buttons
+    function createKeyboard() {
+      keyboardEl.innerHTML = '';
+      for (let i = 65; i <= 90; i++) {
+        const letter = String.fromCharCode(i);
+        const button = document.createElement('button');
+        button.className = 'letter-btn';
+        button.textContent = letter;
+        button.dataset.letter = letter;
+        button.disabled = guessedLetters.includes(letter);
+
+        if (button.disabled) {
+          button.classList.add(currentPokemon.name.includes(letter) ? 'correct' : 'wrong');
+        }
+
+        button.addEventListener('click', () => handleGuess(letter));
+        keyboardEl.appendChild(button);
+      }
+    }
+
+    // Handle a letter guess
+    function handleGuess(letter) {
+      if (!gameActive || guessedLetters.includes(letter)) return;
+
+      guessedLetters.push(letter);
+
+      if (!currentPokemon.name.includes(letter)) {
+        wrongGuesses++;
+        updateHangmanArt();
+        messageEl.textContent = 'WRONG GUESS!';
+        messageEl.style.color = 'var(--accent)';
+        messageEl.classList.add('shake');
+        setTimeout(() => messageEl.classList.remove('shake'), 500);
+
+        if (wrongGuesses >= hangmanStages.length - 1) {
+          gameLost();
+          return;
+        }
+      } else {
+        messageEl.textContent = 'GOOD GUESS!';
+        messageEl.style.color = '#2ecc71';
+      }
+
+      updateWordDisplay();
+      updateGuessedLetters();
+      createKeyboard(); // Update keyboard buttons
+
+      // Check for win
+      if (isWordGuessed()) {
+        gameWon();
+      }
+    }
+
+    // Check if the entire word has been guessed
+    function isWordGuessed() {
+      return currentPokemon.name.split('').every(letter => guessedLetters.includes(letter));
+    }
+
+    // Handle game win
+    function gameWon() {
+      gameActive = false;
+      streak++;
+      if (streak > maxStreak) maxStreak = streak;
+
+      // Calculate score based on difficulty and performance
+      const baseScore = currentDifficulty === 'easy' ? 100 :
+        currentDifficulty === 'medium' ? 200 : 300;
+      const guessBonus = (6 - wrongGuesses) * 50;
+      score += baseScore + guessBonus;
+
+      // Reveal Pokémon sprite
+      pokemonSpriteEl.classList.add('revealed');
+
+      messageEl.textContent = `YOU WIN! IT'S ${currentPokemon.name}!`;
+      messageEl.style.color = '#2ecc71';
+      updateStats();
+
+      // Celebration
+      createCelebration();
+    }
+
+    // Handle game loss
+    function gameLost() {
+      gameActive = false;
+      streak = 0;
+
+      // Reveal Pokémon sprite
+      pokemonSpriteEl.classList.add('revealed');
+
+      messageEl.textContent = `GAME OVER! IT WAS ${currentPokemon.name}.`;
+      messageEl.style.color = 'var(--accent)';
+      updateWordDisplay(); // Reveal the full word
+      updateStats();
+    }
+
+    // Create confetti celebration
+    function createCelebration() {
+      const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff'];
+      const container = document.createElement('div');
+      container.className = 'celebration';
+
+      for (let i = 0; i < 100; i++) {
+        const confetti = document.createElement('div');
+        confetti.className = 'confetti';
+        confetti.style.left = Math.random() * 100 + 'vw';
+        confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+        confetti.style.animationDelay = Math.random() * 2 + 's';
+        container.appendChild(confetti);
+      }
+
+      document.body.appendChild(container);
+
+      // Remove after animation
+      setTimeout(() => {
+        container.remove();
+      }, 3000);
+    }
+
+    // Change difficulty
+    function changeDifficulty(difficulty) {
+      currentDifficulty = difficulty;
+      initGame();
+    }
+
+    // Event listeners
+    resetBtn.addEventListener('click', initGame);
+
+    difficultyBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        changeDifficulty(btn.dataset.difficulty);
+      });
+    });
+
+    // Keyboard support
+    document.addEventListener('keydown', (e) => {
+      if (!gameActive) return;
+
+      const key = e.key.toUpperCase();
+      if (/^[A-Z]$/.test(key) && !guessedLetters.includes(key)) {
+        handleGuess(key);
+
+        // Trigger visual feedback on the button
+        const button = document.querySelector(`.letter-btn[data-letter="${key}"]`);
+        if (button) {
+          button.style.transform = 'scale(0.9)';
+          setTimeout(() => {
+            if (button) button.style.transform = '';
+          }, 100);
+        }
+      }
+    });
+
+
+
+
+
+    // Sound effects configuration
+const sounds = {
+    correct: 'https://www.soundjay.com/buttons/sounds/button-09.mp3',
+    incorrect: 'https://www.soundjay.com/buttons/sounds/button-10.mp3',
+    select: 'https://www.soundjay.com/buttons/sounds/button-21.mp3',
+    shiny: 'https://www.soundjay.com/buttons/sounds/button-04.mp3'
+};
+
+// Function to play a sound effect
+function playSound(type) {
+    const audio = new Audio(sounds[type]);
+    audio.volume = 0.3; // Set volume to 30%
+    audio.play().catch(e => console.log("Sound playback prevented"));
+}
+
+// Music control functions
+const music = document.getElementById('bg-music'); // Make sure you have an audio element with this ID
+const toggleBtn = document.getElementById('music-toggle'); // And a button with this ID
+
+// Set initial volume
+if (music) {
+    music.volume = 0.3;
+}
+
+// Try to autoplay when page loads
+function attemptAutoplay() {
+    if (!music) return;
+    
+    const playPromise = music.play();
+
+    if (playPromise !== undefined) {
+        playPromise.then(() => {
+            // Autoplay succeeded
+            toggleBtn.textContent = '🎵';
+            toggleBtn.classList.add('playing');
+            toggleBtn.classList.remove('muted');
+        }).catch(error => {
+            // Autoplay was prevented
+            toggleBtn.textContent = '🔇';
+            toggleBtn.classList.add('muted');
+            toggleBtn.classList.remove('playing');
+        });
+    }
+}
+
+// Toggle music play/pause
+function toggleMusic() {
+    if (!music || !toggleBtn) return;
+    
+    if (music.paused) {
+        music.play();
+        toggleBtn.textContent = '🎵';
+        toggleBtn.classList.add('playing');
+        toggleBtn.classList.remove('muted');
+    } else {
+        music.pause();
+        toggleBtn.textContent = '🔇';
+        toggleBtn.classList.add('muted');
+        toggleBtn.classList.remove('playing');
+    }
+}
+
+
+
+
+
+// Call this when your page loads:
+window.addEventListener('DOMContentLoaded', attemptAutoplay);
+window.addEventListener('load', attemptAutoplay);
+
+    // Start the game
+    initGame();
+  </script>
+</body>
+
+</html>

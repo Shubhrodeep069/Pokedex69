@@ -1,0 +1,482 @@
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Pokéball Surprise!</title>
+    <style>
+        body {
+    font-family: 'Arial', sans-serif;
+    text-align: center;
+    padding: 20px;
+    background: linear-gradient(to bottom, #0a0a2a 0%, #1a1a4a 100%);
+    color: white;
+    min-height: 100vh;
+}
+
+body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.8) 0.5px, transparent 1px),
+        radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.6) 0.5px, transparent 1px),
+        radial-gradient(circle at 40% 70%, rgba(255, 255, 255, 0.7) 0.5px, transparent 1px);
+    background-size: 500px 500px;
+    z-index: -1;
+    animation: twinkle 5s infinite alternate;
+}
+
+.back-to-pokedex-btn {
+    padding: 12px 20px;
+    font-size: 1.1em;
+    background: linear-gradient(135deg, #ff0000, #cc0000);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    position: relative;
+    overflow: hidden;
+}
+
+.back-to-pokedex-btn::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+        to bottom right,
+        rgba(255, 255, 255, 0.3) 0%,
+        rgba(255, 255, 255, 0) 60%
+    );
+    transform: rotate(30deg);
+    transition: all 0.3s;
+}
+
+.back-to-pokedex-btn:hover::after {
+    animation: shine 1.5s infinite;
+}
+
+@keyframes shine {
+    0% { left: -50%; }
+    100% { left: 150%; }
+}
+
+@keyframes twinkle {
+    0% { opacity: 0.8; }
+    100% { opacity: 1; }
+}
+        h1 {
+            color: #e63946;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .pokeball-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            margin: 30px 0;
+        }
+        .pokeball {
+            background: none;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
+        }
+        .pokeball:hover {
+            transform: translateY(-5px) rotate(15deg);
+            filter: drop-shadow(0 8px 12px rgba(0, 0, 0, 0.2));
+        }
+        .pokeball img {
+            width: 80px;
+            height: 80px;
+            transition: transform 0.3s;
+        }
+        .pokemon-display {
+            margin: 30px auto;
+            padding: 0;
+            max-width: 500px;
+            perspective: 1000px;
+        }
+        .pokemon-card {
+            background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            padding: 25px;
+            transform-style: preserve-3d;
+            animation: cardAppear 0.6s ease-out forwards;
+            border: 4px solid #ffde00;
+            position: relative;
+            overflow: hidden;
+        }
+        @keyframes cardAppear {
+            0% { opacity: 0; transform: translateY(20px) rotateX(15deg); }
+            100% { opacity: 1; transform: translateY(0) rotateX(0); }
+        }
+        .pokemon-card::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                to bottom right,
+                rgba(255, 255, 255, 0.3) 0%,
+                rgba(255, 255, 255, 0) 60%
+            );
+            transform: rotate(30deg);
+            z-index: 1;
+        }
+        .pokemon-image {
+            width: 180px;
+            height: 180px;
+            margin: 0 auto 15px;
+            background: radial-gradient(circle, #ffde00 0%, #ffcc00 100%);
+            border-radius: 50%;
+            padding: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border: 5px solid white;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        .pokemon-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+        }
+        .pokemon-display h2 {
+            color: #3a86ff;
+            text-transform: capitalize;
+            margin: 15px 0;
+            font-size: 28px;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        .pokemon-description {
+            font-style: italic;
+            margin: 20px 0;
+            color: #555;
+            line-height: 1.5;
+            padding: 15px;
+            background: rgba(255, 222, 0, 0.1);
+            border-radius: 12px;
+            border-left: 4px solid #ffde00;
+            animation: fadeIn 0.8s ease-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .pokemon-details {
+            text-align: left;
+            margin-top: 20px;
+            padding: 20px;
+            background: linear-gradient(145deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 15px;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+            animation: slideUp 0.6s ease-out;
+        }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .pokemon-details p {
+            margin: 12px 0;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+        }
+        .pokemon-details strong {
+            min-width: 80px;
+            display: inline-block;
+            color: #6c757d;
+        }
+        .type {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            color: white;
+            font-weight: bold;
+            margin-right: 8px;
+            text-transform: capitalize;
+            font-size: 14px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .loading {
+            font-style: italic;
+            color: #6c757d;
+            font-size: 18px;
+        }
+
+        /* Music Control Styles */
+.music-control {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    text-align: center;
+}
+
+#music-toggle {
+    background: rgb(255, 255, 255);
+    border: 2px solid #3b4cca; /* Using --secondary color directly */
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    font-size: 1.6em;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s;
+}
+
+#music-toggle:hover {
+    transform: scale(1.1);
+    background: white;
+}
+
+#music-toggle.playing {
+    background: rgba(255, 255, 255, 0.9);
+}
+
+#music-toggle.muted {
+    opacity: 0.7;
+    background: rgb(255, 255, 255);
+}
+    </style>
+</head>
+<body>
+
+    <div class="music-control">
+    <button id="music-toggle" onclick="toggleMusic()">🔇</button>
+    <audio id="bg-music" loop>
+        <source src="paglu.mp3" type="audio/mpeg">
+    </audio>
+</div>
+
+
+
+    <div class="back-to-pokedex-container">
+    <button class="back-to-pokedex-btn" onclick="goToPokedex()">
+        ⬅️ Back to Pokédex
+    </button>
+</div>
+    <h1>Pokéball Surprise!</h1>
+    <p>Choose a Pokéball to reveal a random Pokémon!</p>
+    
+    <div class="pokeball-container" id="pokeballs">
+        <!-- Pokéballs will be added here via JavaScript -->
+    </div>
+    
+    <div class="pokemon-display" id="pokemonDisplay">
+        <p class="loading">Click a Pokéball to reveal a Pokémon!</p>
+    </div>
+
+    <script>
+
+        function goToPokedex() {
+    // Change this to your actual Pokédex page URL
+    window.location.href = '../Demo.html';
+    
+    // Or if you want to open in a new tab:
+    // window.open('pokedex.html', '_blank');
+}
+
+        const pokeballsContainer = document.getElementById("pokeballs");
+        const pokemonDisplay = document.getElementById("pokemonDisplay");
+        let allPokemon = []; // Stores fetched Pokémon data
+
+        // Fetch all Pokémon from PokeAPI
+        async function fetchAllPokemon() {
+            try {
+                pokemonDisplay.innerHTML = `<p class="loading">Loading Pokémon...</p>`;
+                
+                // Step 1: Fetch list of Pokémon (limit=1000 to get all)
+                const response = await fetch("https://pokeapi.co/api/v2/pokemon?limit=1000");
+                const data = await response.json();
+                
+                // Step 2: Fetch details for each Pokémon
+                const pokemonUrls = data.results.map(p => p.url);
+                const pokemonPromises = pokemonUrls.map(url => fetch(url).then(res => res.json()));
+                allPokemon = await Promise.all(pokemonPromises);
+                
+                // Step 3: Create Pokéballs
+                createPokeballs();
+                pokemonDisplay.innerHTML = `<p class="loading">Click a Pokéball to reveal a Pokémon!</p>`;
+            } catch (error) {
+                pokemonDisplay.innerHTML = `<p style="color: red;">Error loading Pokémon. Please try again.</p>`;
+                console.error("Fetch error:", error);
+            }
+        }
+
+        // Create 5 Pokéballs
+        function createPokeballs() {
+            pokeballsContainer.innerHTML = ""; // Clear existing balls
+            for (let i = 0; i < 5; i++) {
+                const pokeball = document.createElement("button");
+                pokeball.className = "pokeball";
+                // pokeball.innerHTML = `<img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png" alt="Pokéball">`;
+                pokeball.innerHTML = `<img src="fast ball.png" alt="Pokéball">`;
+                
+                pokeball.addEventListener("click", async () => {
+                    const randomPokemon = allPokemon[Math.floor(Math.random() * allPokemon.length)];
+                    await displayPokemon(randomPokemon);
+                });
+                
+                pokeballsContainer.appendChild(pokeball);
+            }
+        }
+
+        async function displayPokemon(pokemon) {
+            // Get sprite (official artwork or default)
+            const sprite = pokemon.sprites.other["official-artwork"]?.front_default || 
+                           pokemon.sprites.front_default;
+            
+            // Format type(s) with color-coded badges
+            const typesHTML = pokemon.types.map(t => 
+                `<span class="type" style="background-color: ${getTypeColor(t.type.name)}">${t.type.name}</span>`
+            ).join('');
+            
+            // Format abilities (hide hidden abilities)
+            const abilities = pokemon.abilities
+                .filter(a => !a.is_hidden)
+                .map(a => a.ability.name)
+                .join(', ');
+
+            // Fetch species data for the description (English)
+            let description = "A mysterious Pokémon with hidden potential.";
+            try {
+                const speciesResponse = await fetch(pokemon.species.url);
+                const speciesData = await speciesResponse.json();
+                const englishEntry = speciesData.flavor_text_entries.find(
+                    entry => entry.language.name === 'en'
+                );
+                description = englishEntry?.flavor_text || description;
+                // Clean up description
+                description = description.replace(/\n/g, ' ').replace(/\f/g, ' ');
+            } catch (error) {
+                console.error("Error fetching description:", error);
+            }
+
+            pokemonDisplay.innerHTML = `
+                <div class="pokemon-card">
+                    <div class="pokemon-image">
+                        <img src="${sprite}" alt="${pokemon.name}">
+                    </div>
+                    <h2>${pokemon.name}</h2>
+                    <p class="pokemon-description">${description}</p>
+                    <div class="pokemon-details">
+                        <p><strong>Pokédex</strong> #${pokemon.id}</p>
+                        <p><strong>Type</strong> ${typesHTML}</p>
+                        <p><strong>Height</strong> ${pokemon.height / 10}m</p>
+                        <p><strong>Weight</strong> ${pokemon.weight / 10}kg</p>
+                        <p><strong>Abilities</strong> ${abilities}</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Helper: Assign colors to Pokémon types
+        function getTypeColor(type) {
+            const typeColors = {
+                normal: '#A8A77A', fire: '#EE8130', water: '#6390F0',
+                electric: '#F7D02C', grass: '#7AC74C', ice: '#96D9D6',
+                fighting: '#C22E28', poison: '#A33EA1', ground: '#E2BF65',
+                flying: '#A98FF3', psychic: '#F95587', bug: '#A6B91A',
+                rock: '#B6A136', ghost: '#735797', dragon: '#6F35FC',
+                dark: '#705746', steel: '#B7B7CE', fairy: '#D685AD'
+            };
+            return typeColors[type] || '#777'; // Default gray if type not found
+        }
+
+        // Initialize
+        fetchAllPokemon();
+
+        // Sound effects configuration
+const sounds = {
+    correct: 'https://www.soundjay.com/buttons/sounds/button-09.mp3',
+    incorrect: 'https://www.soundjay.com/buttons/sounds/button-10.mp3',
+    select: 'https://www.soundjay.com/buttons/sounds/button-21.mp3',
+    shiny: 'https://www.soundjay.com/buttons/sounds/button-04.mp3'
+};
+
+// Function to play a sound effect
+function playSound(type) {
+    const audio = new Audio(sounds[type]);
+    audio.volume = 0.3; // Set volume to 30%
+    audio.play().catch(e => console.log("Sound playback prevented"));
+}
+
+// Music control functions
+const music = document.getElementById('bg-music'); // Make sure you have an audio element with this ID
+const toggleBtn = document.getElementById('music-toggle'); // And a button with this ID
+
+// Set initial volume
+if (music) {
+    music.volume = 0.3;
+}
+
+// Try to autoplay when page loads
+function attemptAutoplay() {
+    if (!music) return;
+    
+    const playPromise = music.play();
+
+    if (playPromise !== undefined) {
+        playPromise.then(() => {
+            // Autoplay succeeded
+            toggleBtn.textContent = '🎵';
+            toggleBtn.classList.add('playing');
+            toggleBtn.classList.remove('muted');
+        }).catch(error => {
+            // Autoplay was prevented
+            toggleBtn.textContent = '🔇';
+            toggleBtn.classList.add('muted');
+            toggleBtn.classList.remove('playing');
+        });
+    }
+}
+
+// Toggle music play/pause
+function toggleMusic() {
+    if (!music || !toggleBtn) return;
+    
+    if (music.paused) {
+        music.play();
+        toggleBtn.textContent = '🎵';
+        toggleBtn.classList.add('playing');
+        toggleBtn.classList.remove('muted');
+    } else {
+        music.pause();
+        toggleBtn.textContent = '🔇';
+        toggleBtn.classList.add('muted');
+        toggleBtn.classList.remove('playing');
+    }
+}
+
+// Call this when your page loads:
+window.addEventListener('DOMContentLoaded', attemptAutoplay);
+window.addEventListener('load', attemptAutoplay);
+    </script>
+</body>
+</html>
